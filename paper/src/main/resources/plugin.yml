@@ -1,0 +1,7 @@
+name: hAnnounce
+version: '${version}'
+main: dev.hauch.announce.paper.HAnnouncePlugin
+api-version: '1.21'
+description: Announcement plugin for Minecraft servers (foundation build, no features implemented yet).
+authors: [hauchdev]
+website: https://github.com/hauchdev/hAnnounce
