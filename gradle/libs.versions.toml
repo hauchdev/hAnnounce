@@ -1,0 +1,25 @@
+# Central version management for the hAnnounce Free build.
+# Keep every dependency version here; modules must not declare inline versions.
+
+[versions]
+junit = "5.14.4"
+
+# Paper API. Pinned to the newest release line that runs on Java 21, which is the
+# project's initial minimum Java version.
+# NOTE: Minecraft/Paper 26.x requires Java 25 - bump the toolchain and this entry together.
+paper = "1.21.11-R0.1-SNAPSHOT"
+
+# Shadow plugin (https://github.com/GradleUp/shadow), used by the paper module to
+# bundle internal modules into the distributable plugin jar. Platform APIs are
+# never shaded in.
+shadow = "9.6.1"
+
+[libraries]
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+# Version intentionally omitted: aligned by the junit-bom above (platform artifacts use 1.x versions).
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
