@@ -1,94 +1,75 @@
-# hAnnounce — Development Guide
+# Development guide
 
-How to set up a working environment for hAnnounce (Free) and run the build locally.
+This guide explains how to set up a development environment for hAnnounce, build the project and run it on a local Paper server. Module responsibilities and packaging are covered in the [architecture notes](ARCHITECTURE.md).
 
-## Prerequisites
+## Requirements
 
-- **JDK 21** (e.g. [Eclipse Temurin](https://adoptium.net), Microsoft OpenJDK 21, or any
-  other JDK 21 distribution). Gradle toolchains locate the JDK automatically; a JDK 21
-  must simply be installed or resolvable.
-- **IntelliJ IDEA** (any recent 2024+ version, Community is fine). You can also build
-  entirely from the command line.
-- No Gradle installation is required — the Gradle wrapper is checked in.
-- **Git 2.30+**.
+- **JDK 21** — e.g. [Eclipse Temurin](https://adoptium.net) or Microsoft OpenJDK 21. The Gradle toolchain detects the installed JDK automatically.
+- **IntelliJ IDEA** — a recent Community edition is sufficient. Building from the command line works without any IDE.
+- **No Gradle installation is needed.** The wrapper is committed to the repository.
+- **Git 2.30 or newer.**
 
-## Opening the project in IntelliJ IDEA
+## Importing into IntelliJ IDEA
 
-1. `File → Open…` and select the **repository root** (the folder containing
-   `settings.gradle.kts`). Choose *Open as Project* — do not import it as a Maven project.
-2. Let IDEA import the Gradle project and finish syncing. On first sync the wrapper
-   downloads the Gradle distribution and dependencies, which can take a few minutes.
-3. Verify the project SDK: `Project Structure → Project → SDK` should point to JDK 21
-   (e.g. an entry downloaded via `Add SDK → Download JDK` if you have none).
-4. Recommended checks after sync:
-   - `Settings → Editor → File Encodings`: encoding UTF-8 everywhere (files, properties,
-     and default).
-   - `Settings → Editor → Code Style`: line separator LF (this is also enforced by
-     `.editorconfig` and `.gitattributes`).
+1. Choose `File → Open…` and select the **repository root** — the folder containing `settings.gradle.kts`. Open it as a project; do not use a Maven or Eclipse import.
+2. Wait for the Gradle sync to finish. The first sync downloads the Gradle distribution and all dependencies and can take a few minutes.
+3. Verify the project SDK under `File → Project Structure → Project`: it should point to a JDK 21 installation.
+4. Two editor settings are worth checking after the import. Under `Settings → Editor → File Encodings`, the encoding for files, properties and the default should all be UTF-8. The default line separator should be LF. Both are also enforced per file by `.editorconfig` and `.gitattributes`.
 
-## Build and test
+## Building and testing
 
 ```bash
-./gradlew build        # full build: compile, package, test (Windows: gradlew.bat)
+./gradlew build        # compile, package and run tests (Windows: .\gradlew.bat build)
 ./gradlew test         # tests only
 ./gradlew clean build  # clean rebuild
 ```
 
-Windows PowerShell: `.\gradlew.bat build`.
+Parallel execution, the build cache and the configuration cache are enabled through `gradle.properties`.
 
-Gradle features (parallel execution, configuration cache, build cache) are already enabled
-in `gradle.properties`.
+Artifacts produced by the build:
 
-### Artifacts
-
-| Path | Content |
+| Path | Description |
 | --- | --- |
-| `paper/build/libs/hAnnounce-Paper-<version>.jar` | **Distribution jar** — bundles internal modules (put this in a server) |
-| `paper/build/libs/paper-<version>-plain.jar` | Thin jar (not for distribution) |
-| `api/build/libs/…` / `core/build/libs/…` | Internal module jars (no runtime use standalone) |
+| `paper/build/libs/hAnnounce-Paper-<version>.jar` | The plugin jar with the internal modules bundled in. This is the file to install on a server. |
+| `paper/build/libs/paper-<version>.jar` | The thin jar produced by the plain `jar` task. Shadow needs it for runtime resolution; it is not for distribution. |
+| `api/build/libs/…` and `core/build/libs/…` | Module jars treated as part of the plugin classpath at runtime; not distributed standalone. |
 
-## Running a local Paper development server
+## Running a local Paper server
 
-1. Create a local folder, e.g. `run/` (already ignored by `.gitignore`):
-   ```
-   ▸ run/
-   ```
-2. Download a [Paper 1.21.11](https://papermc.io/downloads) build jar and place it in
-   `run/`. Paper requires Java 21 — the same JDK used by the build works.
-3. Build the plugin and copy the distribution jar:
-   ```bash
-   ./gradlew build
-   cp paper/build/libs/hAnnounce-Paper-0.1.0-SNAPSHOT.jar run/plugins/
-   ```
-4. Start the server (accept the EULA on first run):
-   ```bash
-   java -jar paper.jar --nogui
-   ```
+1. Create a folder such as `run/` inside the repository. It is already ignored by git.
+2. Download a Paper 1.21.11 build from [papermc.io/downloads](https://papermc.io/downloads) and place the jar in `run/`. Paper and the plugin both run on Java 21 — the same JDK used by the build is sufficient. In the commands below the server jar is referred to as `paper.jar`.
+3. Build the plugin and copy the distribution jar into `run/plugins/`:
 
-Because the current build is scaffolding only, the server will log
-`hAnnounce loaded (foundation build - no features enabled).` and nothing else will happen.
-That is expected.
+```bash
+./gradlew build
+cp paper/build/libs/hAnnounce-Paper-0.1.0-SNAPSHOT.jar run/plugins/
+```
 
-## Coding conventions
+On Windows, copy with `Copy-Item` in PowerShell instead of `cp`.
 
-- Java 21 toolchain, UTF-8, enforced by `buildSrc/src/main/kotlin/hauch.jvm-conventions.gradle.kts`.
-- Package namespace `dev.hauch.announce.*` (`api`, `core`, `paper` for their modules).
-- Dependency versions only via `gradle/libs.versions.toml`.
-- Keep `api` and `core` free of platform dependencies (see [ARCHITECTURE.md](ARCHITECTURE.md)).
-- Conventional commits (see [CONTRIBUTING.md](../CONTRIBUTING.md)).
+4. Start the server from `run/` and accept the EULA on the first start:
 
-## CI
+```bash
+cd run
+java -jar paper.jar --nogui
+```
 
-GitHub Actions (`.github/workflows/build.yml`) builds and tests on every pull request and
-push to `main`, and uploads the distribution jar on pushes. No publishing happens in CI.
+Because the plugin is still a shell, the server will log `hAnnounce loaded (foundation build - no features enabled).` during startup and nothing further will happen. That is expected until features are implemented.
 
-## Remaining setup checklist (explicitly pending)
+## Conventions
 
-The following are **not** part of the current foundation and are listed so they are not
-forgotten later:
+- The Java 21 toolchain, UTF-8 encoding and the JUnit 5 setup are defined once in `buildSrc/src/main/kotlin/hauch.jvm-conventions.gradle.kts` and applied by every module.
+- Dependency versions live only in `gradle/libs.versions.toml`. Module build files never pin versions inline, and dynamic versions are not used.
+- The `api` and `core` modules must remain free of Paper, Spigot and any other platform dependency. Reasons and boundaries are described in the [architecture notes](ARCHITECTURE.md).
+- Commit messages follow conventional commits; see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-- [ ] Maven publication configuration for `api`/`core` (repository + credentials, e.g.
-      GitHub Packages under `hauchdev`). Not configured anywhere; no fake credentials in
-      the repo.
-- [ ] Pro consumption wiring in `hauchdev/hAnnounce-Pro` (depends on the above).
-- [ ] Release pipeline (no automatic production releases exist in CI during bootstrap).
+## Continuous integration
+
+`.github/workflows/build.yml` builds and tests the project on every pull request and on pushes to `main`, and uploads the plugin jar as a workflow artifact on pushes. CI does not publish anything and does not create releases.
+
+## Pending setup
+
+The following is deliberately not part of the current foundation and remains to be set up:
+
+- [ ] Maven publication of the `api` and `core` artifacts, so that hAnnounce Pro can consume pinned versions. The publication repository and its credentials are not configured yet.
+- [ ] A release pipeline. CI currently performs no publishing and no automated releases.

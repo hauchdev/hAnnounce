@@ -1,60 +1,48 @@
 # hAnnounce
 
-[![Status: Foundation](https://img.shields.io/badge/status-foundation%20scaffolding-164AA3?style=flat)](https://github.com/hauchdev/hAnnounce) [![Platform: Paper](https://img.shields.io/badge/platform-Paper-0783C9?style=flat)](#) [![Java: 21](https://img.shields.io/badge/Java-21-112288?style=flat)](#) [![Build: Gradle](https://img.shields.io/badge/build-Gradle%20Kotlin%20DSL-164AA3?style=flat)](#)
+hAnnounce is an announcement plugin for Minecraft servers. Paper is the primary platform and Spigot compatibility is kept wherever no Paper-specific API is required. The project is developed by [hauchdev](https://hauch.dev).
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-0783C9?style=flat)](LICENSE)
+This repository currently contains the **project foundation only**: the Gradle build, the module structure and a minimal, loadable plugin shell. Announcement features, commands and integrations are not implemented yet; development takes place on the `main` branch.
 
-**hAnnounce** (Free) is the free edition of an announcement plugin for Minecraft servers. It is intended to become a server plugin built primarily for modern Paper servers, with Spigot compatibility where appropriate, developed by [Hauchdev](https://hauch.dev).
-
-> **Current state: project foundation only.**
-> This repository currently contains the build infrastructure, module structure, and a minimal, loadable plugin shell. **No announcement functionality, commands, schedulers, configuration handling, or integrations are implemented yet.** Everything described below is scaffolding for development that is about to start.
-
-## Why this repository exists
-
-- Provide a clean, reproducible Gradle multi-project foundation for hAnnounce development.
-- Establish a stable public API package (`dev.hauch.announce.api`) that other plugins — and the private [hAnnounce Pro](https://github.com/hauchdev/hAnnounce-Pro) edition — can build against in the future.
-- Keep platform-specific code (Paper) isolated from shared code (`core`) and from the public API (`api`).
+The premium edition is developed separately in the private [hAnnounce-Pro](https://github.com/hauchdev/hAnnounce-Pro) repository.
 
 ## Modules
 
-| Module | Purpose | Status |
-| --- | --- | --- |
-| `api` | Public API surface for third-party plugins and hAnnounce Pro. | Scaffolding (empty by design) |
-| `core` | Shared internal implementation code used by platform modules. | Scaffolding (empty by design) |
-| `paper` | Paper plugin: entry point, plugin descriptor, distributable plugin jar. | Minimal entry point only |
+| Module | Responsibility |
+| --- | --- |
+| `api` | Public interface of the project. The only package that third-party plugins and hAnnounce Pro may build against. |
+| `core` | Shared internal code used by the platform modules. Not part of the public API. |
+| `paper` | Paper plugin: entry point, plugin descriptor and the distributable plugin jar. |
 
-## Build
+## Building
 
-Requirements: JDK 21 (the build uses the Gradle toolchain and locates a matching JDK automatically).
+A JDK 21 installation is required. The Gradle wrapper takes care of everything else, so no Gradle installation is needed.
 
 ```bash
-./gradlew build      # compile, package and test all modules
+./gradlew build      # compile, test and package all modules (Windows: .\gradlew.bat build)
 ./gradlew test       # tests only
 ```
 
-The distributable Paper plugin jar is produced at `paper/build/libs/hAnnounce-Paper-<version>.jar`.
+The plugin jar is written to `paper/build/libs/hAnnounce-Paper-<version>.jar`. The complete environment setup, including the IntelliJ configuration and a local Paper server, is described in the [development guide](docs/DEVELOPMENT.md).
 
-For the full development guide (IntelliJ setup, running a local Paper server, conventions), see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+## Project state
 
-## Relationship to hAnnounce Pro
+Implemented so far:
 
-`hauchdev/hAnnounce-Pro` is a private repository for the premium edition. Pro will consume versioned API artifacts published from this repository through a Maven repository. That pipeline is **not configured yet** — see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the plan.
+- Gradle multi-project build with shared conventions: Java 21 toolchain, UTF-8 encoding, JUnit 5, reproducible archives.
+- Continuous integration on GitHub Actions for pull requests and pushes to `main`.
+- A valid plugin descriptor and a minimal plugin entry point.
 
-## Not implemented (planned)
+Not implemented yet:
 
-The following are part of the project's direction but **do not exist in the code yet**:
-
-- Announcement functionality (the core feature set)
-- Commands
-- Scheduled announcements
-- Configuration system
-- Message rendering
-- Integrations with other platforms or services
-- A public API for third-party use
-- Maven publication of `api`/`core` artifacts
+- Announcement functionality, commands and scheduling
+- Configuration system and message rendering
+- Integrations with external services
+- A public programming interface for third parties and for Pro
+- Publication of the `api` and `core` artifacts
 
 ## License
 
-hAnnounce Free is released under the [MIT License](LICENSE).
+The project is distributed under the [MIT license](LICENSE).
 
-© 2026 Hauchdev. hAnnounce is not affiliated with, endorsed by, or associated with Mojang Studios, Microsoft, or the Paper project.
+© 2026 Hauchdev. hAnnounce is not affiliated with Mojang Studios, Microsoft or the Paper project.

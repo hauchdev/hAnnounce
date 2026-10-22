@@ -1,61 +1,43 @@
 # Contributing to hAnnounce
 
-Thanks for taking an interest in hAnnounce. This document describes how to set up a
-development environment and submit contributions.
-
-## Project state
-
-hAnnounce is currently in its **foundation stage**: the codebase contains build
-infrastructure and a minimal plugin shell. Announcement features are being developed.
-Please read [README.md](README.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-first to understand what exists today versus what is planned.
+Thanks for your interest in the project. Before starting, please read the [README](README.md) and the [architecture notes](docs/ARCHITECTURE.md): the codebase is in its foundation stage and it is important to know what exists and what is still planned.
 
 ## Getting started
 
-1. Fork and clone this repository.
-2. Install a JDK 21 (e.g. [Eclipse Temurin](https://adoptium.net) or Microsoft OpenJDK 21).
-   No Gradle installation is required — use the checked-in wrapper.
-3. Open the repository root in IntelliJ IDEA and let Gradle sync.
-4. Build and test: `./gradlew build`.
+1. Fork and clone the repository.
+2. Install a JDK 21 distribution (for example [Eclipse Temurin](https://adoptium.net) or Microsoft OpenJDK 21). Gradle itself is not required; the wrapper is committed to the repository.
+3. Open the repository root in IntelliJ IDEA, or work directly from the command line.
+4. Build the project once to confirm the environment works: `./gradlew build`.
 
-Full environment details: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+Detailed environment setup is covered in the [development guide](docs/DEVELOPMENT.md).
 
-## Ground rules
+## Development guidelines
 
-- **Java 21 is the toolchain target.** Do not add JavaTools or features that demand a newer
-  language level without discussing the platform compatibility implications first.
-- **Platform APIs stay out of internal modules.** `api` and `core` must not depend on Paper,
-  Spigot, or any other platform API. Platform glue belongs in `paper`.
-- **Dependencies are versioned centrally** in `gradle/libs.versions.toml`. Never pin a
-  dependency inline in a module build file. Prefer zero new dependencies.
-- **No dynamic versions.** Every used version must be explicitly stated in the catalog.
-- **Never shade platform APIs** into the plugin jar.
+- **Java 21 is the toolchain target.** Raising the language level or adding anything that requires a newer Java version must be discussed first, because the plugin has to keep running on Java 21 servers.
+- **Platform APIs stay where they belong.** The `api` and `core` modules must not depend on Paper, Spigot or any other platform API. Platform glue is written in the `paper` module.
+- **Versions are managed centrally** in `gradle/libs.versions.toml`. Module build files never pin a version inline. Prefer not to add dependencies at all; when one is unavoidable, record it in the catalog with an exact version — dynamic versions are not used.
+- **Do not shade platform or server classes into the plugin jar.** The packaging setup already excludes them; keep it that way.
 
-## Commit style
+## Commit messages
 
-Commits follow the [Conventional Commits](https://www.conventionalcommits.org) format:
+Commits follow [Conventional Commits](https://www.conventionalcommits.org):
 
 ```
 <type>: <short imperative description>
-
-<optional body>
 ```
 
-Common types: `feat`, `fix`, `build`, `test`, `docs`, `ci`, `refactor`, `chore`, `perf`.
+The types in use are `feat`, `fix`, `build`, `test`, `docs`, `ci`, `refactor`, `perf` and `chore`.
 
 ## Pull requests
 
-1. Branch from `main` with a short, descriptive branch name (`feat/announcement-engine`).
-2. Keep PRs focused — one change per PR.
-3. Run `./gradlew build` locally before pushing; the CI must pass.
-4. Describe what changed and why; link related issues.
-5. Update [CHANGELOG.md](CHANGELOG.md) under `## [Unreleased]` for user-visible changes.
+1. Branch off `main` and use a short, descriptive branch name, for example `feat/settlement-messages`.
+2. Keep one change per pull request.
+3. Run `./gradlew build` locally before pushing. CI runs the same build and must pass.
+4. In the description, state what changed and why, and link any related issues.
+5. User-visible changes belong in [CHANGELOG.md](CHANGELOG.md) under `## [Unreleased]`.
 
-## Reporting bugs
+## Bug reports
 
-Open a GitHub issue with:
-- The hAnnounce version (from `plugin.yml`, once releases exist).
-- The server platform and version (e.g. Paper 1.21.11).
-- Steps to reproduce and any relevant console output.
+Open a GitHub issue and include the hAnnounce version (from `plugin.yml`, once releases exist), the server platform and version (for example Paper 1.21.11), steps to reproduce and the relevant console output.
 
-For vulnerabilities use the process in [SECURITY.md](SECURITY.md).
+Security vulnerabilities follow the process in [SECURITY.md](SECURITY.md) and are not reported through public issues.
