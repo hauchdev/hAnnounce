@@ -65,11 +65,24 @@ Because the plugin is still a shell, the server will log `hAnnounce loaded (foun
 
 ## Continuous integration
 
-`.github/workflows/build.yml` builds and tests the project on every pull request and on pushes to `main`, and uploads the plugin jar as a workflow artifact on pushes. CI does not publish anything and does not create releases.
+`.github/workflows/build.yml` builds and tests the project on every pull request and on pushes to `main`, and uploads the plugin jar as a workflow artifact on pushes. This workflow does not publish anything and does not create releases.
+
+## Publishing artifacts
+
+The `api` and `core` modules are configured to publish to GitHub Packages under the `hauchdev` account. The publication uses the project coordinates (`dev.hauch.announce:api`, `dev.hauch.announce:core`) and reads credentials from:
+
+- the `GITHUB_ACTOR` and `GITHUB_TOKEN` environment variables, or
+- a user-level `~/.gradle/gradle.properties` with `github.actor` and `github.token`. This file is outside the repository and must never be committed.
+
+The publication has never been executed; the first real `publish` happens once those modules carry actual content:
+
+```bash
+./gradlew publish
+```
+
+In CI there is a dispatch-only `publish` workflow (`.github/workflows/publish.yml`) that publishes with the workflow's own token. It runs only when triggered by hand — nothing is published automatically.
 
 ## Pending setup
 
-The following is deliberately not part of the current foundation and remains to be set up:
-
-- [ ] Maven publication of the `api` and `core` artifacts, so that hAnnounce Pro can consume pinned versions. The publication repository and its credentials are not configured yet.
-- [ ] A release pipeline. CI currently performs no publishing and no automated releases.
+- [ ] First real publication of the `api` and `core` artifacts once they carry content. Until then hAnnounce Pro builds against the local checkout of this repository.
+- [ ] A release pipeline. CI does not publish automatically and does not create releases.

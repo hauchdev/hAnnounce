@@ -48,9 +48,14 @@ Dependencies flow strictly downward: `paper → core → api`. No module depends
 
 ## hAnnounce Pro
 
-Pro is a separate repository and an independent Gradle project. Once the publication pipeline exists, hAnnounce will publish versioned `api` (and, if useful, `core`) artifacts to a Maven repository, and Pro will compile against pinned versions. Pro never forks Free sources.
+Pro's distribution model is **standalone**: its jar bundles the public Free artifacts (`dev.hauch.announce:api`, `dev.hauch.announce:core`) and ships as a single plugin that does not require Free installed on the server. Pro does not fork Free sources; it consumes the compiled artifacts.
 
-**Not configured yet.** No publication repository and no credentials exist during bootstrap, and no placeholder configuration is shipped. The details and the pending checklist are documented on both sides — see the Free [development guide](DEVELOPMENT.md) and the [Pro architecture notes](https://github.com/hauchdev/hAnnounce-Pro/blob/main/docs/ARCHITECTURE.md).
+Two rules keep this distribution workable:
+
+1. **The `paper` module of this repository stays thin.** Engine and product logic belong in `core`, with public interfaces in `api`. Anything implemented in `paper` would not be carried into the Pro jar.
+2. **Do not mix editions on one server.** Pro ships its own copy of Free's classes; installing Free next to Pro duplicates the engine. Pro warns at startup when it detects the free plugin.
+
+Publication is configured (GitHub Packages under the `hauchdev` account; credentials via environment variables or a user-level `gradle.properties`) but has never been executed. While no artifacts are published, Pro builds against the local Free checkout through a Gradle composite build. Publishing is manual — locally with `gradlew publish`, or through the dispatch-only `publish` workflow; see the [development guide](DEVELOPMENT.md).
 
 ## Not implemented (planned)
 
@@ -58,5 +63,5 @@ Pro is a separate repository and an independent Gradle project. Once the publica
 - Commands and permission handling
 - Configuration system
 - Integrations with external services
-- Maven publication of `api`/`core` artifacts
+- First publication of the `api`/`core` artifacts (the pipeline is configured; nothing published yet)
 - License validation (Pro side)

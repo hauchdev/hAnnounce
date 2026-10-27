@@ -4,7 +4,9 @@ hAnnounce is an announcement plugin for Minecraft servers. Paper is the primary 
 
 This repository currently contains the **project foundation only**: the Gradle build, the module structure and a minimal, loadable plugin shell. Announcement features, commands and integrations are not implemented yet; development takes place on the `main` branch.
 
-The premium edition is developed separately in the private [hAnnounce-Pro](https://github.com/hauchdev/hAnnounce-Pro) repository.
+The premium edition is developed separately in the private [hAnnounce-Pro](https://github.com/hauchdev/hAnnounce-Pro) repository. Pro is a **standalone build**: its single plugin jar bundles the public artifacts published from this repository (`api`, `core`) and does not require hAnnounce to be installed on the server.
+
+Because of that packaging, engine code belongs in `core`, with public interfaces in `api`; this repository's `paper` module stays thin glue. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Modules
 
@@ -39,7 +41,7 @@ Not implemented yet:
 - Configuration system and message rendering
 - Integrations with external services
 - A public programming interface for third parties and for Pro
-- Publication of the `api` and `core` artifacts
+- First publication of the `api` and `core` artifacts (the pipeline is configured, nothing has been published yet)
 
 ## License
 

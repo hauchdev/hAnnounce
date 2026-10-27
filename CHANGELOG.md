@@ -17,6 +17,9 @@ has been published yet — entries under `Unreleased` describe work on `main`.
 - Minimal loadable Paper plugin entry point with a validated plugin descriptor
   (`plugin.yml`).
 - Plugin jar packaging that bundles internal modules and never shades platform APIs.
+- Maven publishing configuration (GitHub Packages) for the public `api` and `core`
+  artifacts, plus a dispatch-only publishing workflow. Manual publishing; nothing is
+  pushed to any registry automatically.
 - Automated build workflow for GitHub Actions.
 - Project documentation: architecture notes and development guide.
 
