@@ -1,5 +1,11 @@
 // Paper platform module of hAnnounce: plugin entry point, plugin descriptor and
 // distribution jar production.
+//
+// DISTRIBUTION RULE for the standalone Pro edition: engine and product logic
+// belong in `core` (with public interfaces in `api`) - hAnnounce Pro bundles
+// those artifacts into its own single plugin jar. Anything implemented inside
+// this module would NOT be carried into Pro. Keep the paper module thin: only
+// lifecycle glue, descriptor handling and packaging.
 
 plugins {
     id("hauch.jvm-conventions")

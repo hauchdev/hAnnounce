@@ -6,4 +6,5 @@
 plugins {
     `java-library`
     id("hauch.jvm-conventions")
+    id("hauch.publish-conventions")
 }
